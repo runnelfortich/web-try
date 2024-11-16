@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memashabi</title>
+    <style>
+        /* CSS Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body and font style */
+        body {
+            font-family: Arial, sans-serif;
+            transition: background-color 0.5s ease;
+        }
+
+        /* Container for the message input and button */
+        .message-container {
+            margin-top: 20px;
+        }
+
+        /* Message input box */
+        .message-box {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: none;
+        }
+
+        /* Output for displaying messages */
+        .message-output {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f0f0f0;
+        }
+
+        /* Send button */
+        .send-btn {
+            margin-top: 10px;
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Disabled state for the button */
+        .send-btn:disabled {
+            background-color: gray;
+            cursor: not-allowed;
+        }
+
+        /* Each message row output */
+        .message-output p {
+            margin: 0;
+            font-size: 16px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="message-container">
+        <textarea id="messageInput" class="message-box" placeholder="Type your message..."></textarea>
+        <button id="sendBtn" class="send-btn" onclick="sendMessage()">Send Message</button>
+    </div>
+
+    <div class="message-output" id="messageOutput">
+        <!-- Last message will appear here -->
+    </div>
+
+    <script>
+        // Function to generate a random color
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        // Load stored messages and background color if available
+        window.onload = function() {
+            const storedMessages = JSON.parse(localStorage.getItem('messages')) || [];
+            const backgroundColor = localStorage.getItem('backgroundColor');
+
+            // Apply stored background color
+            if (backgroundColor) {
+                document.body.style.backgroundColor = backgroundColor;
+            }
+
+            // Display all stored messages row by row
+            const messageOutput = document.getElementById('messageOutput');
+            storedMessages.forEach(msg => {
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message-row');
+                messageElement.innerHTML = `<p>${msg}</p>`;
+                messageOutput.appendChild(messageElement);
+            });
+        };
+
+        // Send message function
+        function sendMessage() {
+            const message = document.getElementById('messageInput').value;
+            if (message.trim() !== "") {
+                // Get a random background color
+                const randomColor = getRandomColor();
+                document.body.style.backgroundColor = randomColor;
+
+                // Store the message and background color
+                const storedMessages = JSON.parse(localStorage.getItem('messages')) || [];
+                storedMessages.push(message);
+                localStorage.setItem('messages', JSON.stringify(storedMessages));
+                localStorage.setItem('backgroundColor', randomColor);
+
+                // Display the new message in the message output
+                const messageOutput = document.getElementById('messageOutput');
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message-row');
+                messageElement.innerHTML = `<p>${message}</p>`;
+                messageOutput.appendChild(messageElement);
+
+                // Disable the input and button after sending the message
+                document.getElementById('messageInput').disabled = true;
+                document.getElementById('sendBtn').disabled = true;
+            }
+        }
+    </script>
+</body>
+</html>
